@@ -33,28 +33,28 @@ int main(void)
                 switch (event.key.keysym.sym)
                 {
                 case SDLK_w:
-                    camera.position.x += 0.1f;
-                    break;
-                case SDLK_s:
-                    camera.position.x -= 0.1f;
-                    break;
-                case SDLK_a:
-                    camera.position.z -= 0.1f;
-                    break;
-                case SDLK_d:
                     camera.position.z += 0.1f;
                     break;
+                case SDLK_s:
+                    camera.position.z -= 0.1f;
+                    break;
+                case SDLK_a:
+                    camera.position.x -= 0.1f;
+                    break;
+                case SDLK_d:
+                    camera.position.x += 0.1f;
+                    break;
                 case SDLK_LEFT:
-                    camera.direction.x -= 0.1f;
+                    camera.yaw -= 0.1f;
                     break;
                 case SDLK_RIGHT:
-                    camera.direction.x += 0.1f;
+                    camera.yaw += 0.1f;
                     break;
                 case SDLK_UP:
-                    camera.direction.y -= 0.1f;
+                    camera.pitch -= 0.1f;
                     break;
                 case SDLK_DOWN:
-                    camera.direction.y += 0.1f;
+                    camera.pitch += 0.1f;
                     break;
                 case SDLK_SPACE:
                     camera.position.y += 0.1f;

@@ -20,8 +20,8 @@ typedef struct
 typedef struct
 {
     float fov;
+    float yaw, pitch;
     Vector3f position;
-    Vector3f direction;
 } Camera;
 
 #endif

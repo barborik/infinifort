@@ -2,19 +2,16 @@
 
 void CreateCamera(Camera *camera)
 {
-    Vector3f position, direction;
+    Vector3f position;
 
     position.x = 0.0f;
     position.y = 0.0f;
     position.z = 0.0f;
 
-    direction.x = 0.0f;
-    direction.y = 0.0f;
-    direction.z = 0.0f;
-
     camera->fov = 90.0f;
+    camera->yaw = 0.0f;
+    camera->pitch = 0.0f;
     camera->position = position;
-    camera->direction = direction;
 }
 
 #define EPSILON 1e-6
@@ -72,6 +69,10 @@ int CastRay(Vector3f origin, Vector3f direction, World world, int debug)
 
         if (voxel != 0)
         {
+            if (debug)
+            {
+                printf("==========\n");
+            }
             return voxel;
         }
 
@@ -88,6 +89,10 @@ int CastRay(Vector3f origin, Vector3f direction, World world, int debug)
         voxelPosition.z += mask.z * sign.z;
     }
 
+    if (debug)
+    {
+        printf("==========\n");
+    }
     return 0;
 }
 
@@ -98,27 +103,20 @@ void Render(Camera camera, World world)
     float scale = tan(ToRadians(camera.fov * 0.5f));
     float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
 
-    // float projPlaneDistance = 1.0f / tan(ToRadians(camera.fov / 2.0f)) * SCREEN_WIDTH / 2.0f;
+    // euler angles to direction vector
+    Vector3f directionOffset;
+    directionOffset.x = cos(camera.pitch) * cos(camera.yaw);
+    directionOffset.y = sin(camera.pitch);
+    directionOffset.z = cos(camera.pitch) * sin(camera.yaw);
 
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
         for (int j = 0; j < SCREEN_WIDTH; j++)
         {
-            float yaw = (2 * (j + 0.5f) / (float)SCREEN_WIDTH - 1) * aspectRatio * scale + camera.direction.x;
-            float pitch = (1 - 2 * (i + 0.5f) / (float)SCREEN_HEIGHT) * scale + camera.direction.y;
-            float roll = camera.direction.z;
-
-            // float yaw = atan((j - SCREEN_WIDTH / 2.0f) / projPlaneDistance) + camera.direction.x;
-            // float pitch = atan((i - SCREEN_HEIGHT / 2.0f) / projPlaneDistance) + camera.direction.y;
-
-            // printf("YAW PITCH %5f | %5f\n", yaw, pitch);
-
-            // euler angles to direction vector
             Vector3f direction;
-            float xzLength = cos(pitch);
-            direction.x = xzLength * cos(yaw);
-            direction.y = sin(pitch);
-            direction.z = xzLength * sin(-yaw);
+            direction.x = (2 * (j + 0.5f) / (float)SCREEN_WIDTH - 1) * aspectRatio * scale;
+            direction.y = (1 - 2 * (i + 0.5f) / (float)SCREEN_HEIGHT) * scale;
+            direction.z = 1;
 
             if (debug && debug_x == j && debug_y == i)
             {
