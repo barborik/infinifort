@@ -1,7 +1,5 @@
 #include "includes.h"
 
-int debug_x, debug_y, debug = 0;
-
 int main(void)
 {
     SDL_Event event;
@@ -14,6 +12,8 @@ int main(void)
     CreateWorld(&world);
     CreateCamera(&camera);
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     while (1)
     {
         float fps;
@@ -25,45 +25,45 @@ int main(void)
             {
             case SDL_QUIT:
                 goto exit;
-            case SDL_MOUSEBUTTONDOWN:
-                debug = 1;
-                SDL_GetMouseState(&debug_x, &debug_y);
-                break;
+            case SDL_MOUSEMOTION:
+                camera.yaw += 0.0025f * event.motion.xrel;
+                camera.pitch += 0.0025f * event.motion.yrel;
+                continue;
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym)
                 {
                 case SDLK_w:
                     camera.position.z += 0.1f;
-                    break;
+                    continue;
                 case SDLK_s:
                     camera.position.z -= 0.1f;
-                    break;
+                    continue;
                 case SDLK_a:
                     camera.position.x -= 0.1f;
-                    break;
+                    continue;
                 case SDLK_d:
                     camera.position.x += 0.1f;
-                    break;
+                    continue;
                 case SDLK_LEFT:
                     camera.yaw -= 0.1f;
-                    break;
+                    continue;
                 case SDLK_RIGHT:
                     camera.yaw += 0.1f;
-                    break;
+                    continue;
                 case SDLK_UP:
                     camera.pitch -= 0.1f;
-                    break;
+                    continue;
                 case SDLK_DOWN:
                     camera.pitch += 0.1f;
-                    break;
+                    continue;
                 case SDLK_SPACE:
                     camera.position.y += 0.1f;
-                    break;
+                    continue;
                 case SDLK_LSHIFT:
                     camera.position.y -= 0.1f;
-                    break;
+                    continue;
                 }
-                break;
+                continue;
             }
         }
 

@@ -8,19 +8,75 @@ void CreateCamera(Camera *camera)
     position.y = 0.0f;
     position.z = 0.0f;
 
-    camera->fov = 90.0f;
+    camera->fov = 70.0f;
     camera->yaw = 0.0f;
     camera->pitch = 0.0f;
     camera->position = position;
 }
 
-#define EPSILON 1e-6
 #define MAX_STEPS 10
 
-// https://voxel.wiki/wiki/raycasting/
-int CastRay(Vector3f origin, Vector3f direction, World world, int debug)
+int CastRay(Vector3f origin, Vector3f direction, World world)
 {
-    Normalize(&direction);
+    Vector3i voxelPosition = {
+        (int)floor(origin.x),
+        (int)floor(origin.y),
+        (int)floor(origin.z)};
+
+    Vector3i step = {
+        (direction.x >= 0.0f) ? 1 : -1,
+        (direction.y >= 0.0f) ? 1 : -1,
+        (direction.z >= 0.0f) ? 1 : -1};
+
+    Vector3f tDelta = {
+        (direction.x != 0.0f) ? fabs(1.0f / direction.x) : INFINITY,
+        (direction.y != 0.0f) ? fabs(1.0f / direction.y) : INFINITY,
+        (direction.z != 0.0f) ? fabs(1.0f / direction.z) : INFINITY};
+
+    Vector3f tMax = {
+        (direction.x != 0.0f) ? (step.x > 0 ? (floor(origin.x + 1) - origin.x) : (origin.x - floor(origin.x))) * tDelta.x : INFINITY,
+        (direction.y != 0.0f) ? (step.y > 0 ? (floor(origin.y + 1) - origin.y) : (origin.y - floor(origin.y))) * tDelta.y : INFINITY,
+        (direction.z != 0.0f) ? (step.z > 0 ? (floor(origin.z + 1) - origin.z) : (origin.z - floor(origin.z))) * tDelta.z : INFINITY};
+
+    for (int i = 0; i < MAX_STEPS; i++)
+    {
+        int voxel = GetVoxel(world, voxelPosition);
+        if (voxel != 0)
+        {
+            return voxel;
+        }
+
+        if (tMax.x < tMax.y)
+        {
+            if (tMax.x < tMax.z)
+            {
+                voxelPosition.x += step.x;
+                tMax.x += tDelta.x;
+            }
+            else
+            {
+                voxelPosition.z += step.z;
+                tMax.z += tDelta.z;
+            }
+        }
+        else
+        {
+            if (tMax.y < tMax.z)
+            {
+                voxelPosition.y += step.y;
+                tMax.y += tDelta.y;
+            }
+            else
+            {
+                voxelPosition.z += step.z;
+                tMax.z += tDelta.z;
+            }
+        }
+    }
+
+    return 0;
+
+    /*Normalize(&direction);
 
     if (direction.x == 0.0f) direction.x = EPSILON;
     if (direction.y == 0.0f) direction.y = EPSILON;
@@ -93,21 +149,31 @@ int CastRay(Vector3f origin, Vector3f direction, World world, int debug)
     {
         printf("==========\n");
     }
-    return 0;
+    return 0;*/
 }
 
-extern int debug_x, debug_y, debug;
+void RotateY(Vector3f *vector, float angle)
+{
+    float x = cos(angle) * vector->x + sin(angle) * vector->z;
+    float z = -sin(angle) * vector->x + cos(angle) * vector->z;
+
+    vector->x = x;
+    vector->z = z;
+}
+
+void RotateZ(Vector3f *vector, float angle)
+{
+    float y = cos(angle) * vector->y - sin(angle) * vector->z;
+    float z = sin(angle) * vector->y + cos(angle) * vector->z;
+
+    vector->y = y;
+    vector->z = z;
+}
 
 void Render(Camera camera, World world)
 {
     float scale = tan(ToRadians(camera.fov * 0.5f));
     float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
-
-    // euler angles to direction vector
-    Vector3f directionOffset;
-    directionOffset.x = cos(camera.pitch) * cos(camera.yaw);
-    directionOffset.y = sin(camera.pitch);
-    directionOffset.z = cos(camera.pitch) * sin(camera.yaw);
 
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -116,15 +182,12 @@ void Render(Camera camera, World world)
             Vector3f direction;
             direction.x = (2 * (j + 0.5f) / (float)SCREEN_WIDTH - 1) * aspectRatio * scale;
             direction.y = (1 - 2 * (i + 0.5f) / (float)SCREEN_HEIGHT) * scale;
-            direction.z = 1;
+            direction.z = 1.0f;
 
-            if (debug && debug_x == j && debug_y == i)
-            {
-                CastRay(camera.position, direction, world, 1);
-                debug = 0;
-            }
+            RotateZ(&direction, camera.pitch);
+            RotateY(&direction, camera.yaw);
 
-            int voxel = CastRay(camera.position, direction, world, 0);
+            int voxel = CastRay(camera.position, direction, world);
 
             if (voxel != 0)
             {
@@ -132,6 +195,4 @@ void Render(Camera camera, World world)
             }
         }
     }
-
-    // printf("======\n");
 }
