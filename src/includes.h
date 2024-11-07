@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#include <pthread.h>
 
 #include <SDL2/SDL.h>
 

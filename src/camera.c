@@ -170,12 +170,23 @@ void RotateZ(Vector3f *vector, float angle)
     vector->z = z;
 }
 
-void Render(Camera camera, World world)
+typedef struct
 {
-    float scale = tan(ToRadians(camera.fov * 0.5f));
+    Camera camera;
+    World world;
+    int start, end;
+} ThreadArgs;
+
+pthread_t threads[4];
+
+void *RenderRows(void *args)
+{
+    ThreadArgs *data = args;
+
+    float scale = tan(ToRadians(data->camera.fov * 0.5f));
     float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
 
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    for (int i = data->start; i < data->end; i++)
     {
         for (int j = 0; j < SCREEN_WIDTH; j++)
         {
@@ -184,15 +195,37 @@ void Render(Camera camera, World world)
             direction.y = (1 - 2 * (i + 0.5f) / (float)SCREEN_HEIGHT) * scale;
             direction.z = 1.0f;
 
-            RotateZ(&direction, camera.pitch);
-            RotateY(&direction, camera.yaw);
+            RotateZ(&direction, data->camera.pitch);
+            RotateY(&direction, data->camera.yaw);
 
-            int voxel = CastRay(camera.position, direction, world);
+            int voxel = CastRay(data->camera.position, direction, data->world);
 
             if (voxel != 0)
             {
                 SetPixel(j, i, 0xff0000ff);
             }
         }
+    }
+}
+
+void Render(Camera camera, World world)
+{
+    int linesPerThread = SCREEN_HEIGHT / 4;
+
+    ThreadArgs args[4];
+
+    for (int i = 0; i < 4; i++)
+    {
+        args[i].camera = camera;
+        args[i].world = world;
+        args[i].start = linesPerThread * i;
+        args[i].end = linesPerThread * i + linesPerThread;
+
+        pthread_create(&(threads[i]), NULL, RenderRows, &(args[i]));
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        pthread_join(threads[i], NULL);
     }
 }
