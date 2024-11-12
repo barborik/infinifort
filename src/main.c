@@ -16,8 +16,8 @@ int main(void)
 
     while (1)
     {
-        float fps;
-        int frame_time, start_time = SDL_GetTicks();
+        // float fps;
+        // int frame_time, start_time = SDL_GetTicks();
 
         if (SDL_PollEvent(&event))
         {
@@ -25,44 +25,9 @@ int main(void)
             {
             case SDL_QUIT:
                 goto exit;
-            case SDL_MOUSEMOTION:
-                camera.yaw += 0.0025f * event.motion.xrel;
-                camera.pitch += 0.0025f * event.motion.yrel;
-                continue;
             case SDL_KEYDOWN:
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_w:
-                    camera.position.z += 0.1f;
-                    continue;
-                case SDLK_s:
-                    camera.position.z -= 0.1f;
-                    continue;
-                case SDLK_a:
-                    camera.position.x -= 0.1f;
-                    continue;
-                case SDLK_d:
-                    camera.position.x += 0.1f;
-                    continue;
-                case SDLK_LEFT:
-                    camera.yaw -= 0.1f;
-                    continue;
-                case SDLK_RIGHT:
-                    camera.yaw += 0.1f;
-                    continue;
-                case SDLK_UP:
-                    camera.pitch -= 0.1f;
-                    continue;
-                case SDLK_DOWN:
-                    camera.pitch += 0.1f;
-                    continue;
-                case SDLK_SPACE:
-                    camera.position.y += 0.1f;
-                    continue;
-                case SDLK_LSHIFT:
-                    camera.position.y -= 0.1f;
-                    continue;
-                }
+            case SDL_MOUSEMOTION:
+                Control(event, &camera);
                 continue;
             }
         }
@@ -75,8 +40,8 @@ int main(void)
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
 
-        frame_time = SDL_GetTicks() - start_time;
-        fps = (frame_time > 0) ? 1000.0f / frame_time : 0.0f;
+        // frame_time = SDL_GetTicks() - start_time;
+        // fps = (frame_time > 0) ? 1000.0f / frame_time : 0.0f;
 
         // printf("%f\n", fps);
     }

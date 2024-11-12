@@ -1,12 +1,22 @@
 #include "includes.h"
 
+typedef struct
+{
+    Camera camera;
+    World world;
+    int start, end;
+} ThreadArgs;
+
+int nThreads = 8;
+pthread_t threads[8];
+
 void CreateCamera(Camera *camera)
 {
     Vector3f position;
 
-    position.x = 0.0f;
-    position.y = 0.0f;
-    position.z = 0.0f;
+    position.x = 0.5f;
+    position.y = 4.0f;
+    position.z = 0.5f;
 
     camera->fov = 70.0f;
     camera->yaw = 0.0f;
@@ -14,7 +24,7 @@ void CreateCamera(Camera *camera)
     camera->position = position;
 }
 
-#define MAX_STEPS 10
+#define MAX_STEPS 64
 
 int CastRay(Vector3f origin, Vector3f direction, World world)
 {
@@ -75,109 +85,7 @@ int CastRay(Vector3f origin, Vector3f direction, World world)
     }
 
     return 0;
-
-    /*Normalize(&direction);
-
-    if (direction.x == 0.0f) direction.x = EPSILON;
-    if (direction.y == 0.0f) direction.y = EPSILON;
-    if (direction.z == 0.0f) direction.z = EPSILON;
-
-    Vector3f signf;
-    signf.x = (direction.x >= 0.0f) ? 1.0f : -1.0f;
-    signf.y = (direction.y >= 0.0f) ? 1.0f : -1.0f;
-    signf.z = (direction.z >= 0.0f) ? 1.0f : -1.0f;
-
-    Vector3i sign;
-    sign.x = signf.x;
-    sign.y = signf.y;
-    sign.z = signf.z;
-
-    Vector3f step;
-    step.x = 1.0f / direction.x;
-    step.y = 1.0f / direction.y;
-    step.z = 1.0f / direction.z;
-
-    Vector3f originGrid;
-    originGrid.x = floorf(origin.x);
-    originGrid.y = floorf(origin.y);
-    originGrid.z = floorf(origin.z);
-
-    Vector3i voxelPosition;
-    voxelPosition.x = originGrid.x;
-    voxelPosition.y = originGrid.y;
-    voxelPosition.z = originGrid.z;
-
-    Vector3f sideDistance;
-    sideDistance.x = (originGrid.x - origin.x + 0.5f + signf.x * 0.5f) * step.x;
-    sideDistance.y = (originGrid.y - origin.y + 0.5f + signf.y * 0.5f) * step.y;
-    sideDistance.z = (originGrid.z - origin.z + 0.5f + signf.z * 0.5f) * step.z;
-
-    Vector3i mask;
-
-    for (int i = 0; i < MAX_STEPS; i++)
-    {
-        if (debug)
-        {
-            printf("VOXEL %d %d %d\n", voxelPosition.x, voxelPosition.y, voxelPosition.z);
-        }
-
-        int voxel = GetVoxel(world, voxelPosition);
-
-        if (voxel != 0)
-        {
-            if (debug)
-            {
-                printf("==========\n");
-            }
-            return voxel;
-        }
-
-        mask.x = sideDistance.x <= ((sideDistance.y < sideDistance.z) ? sideDistance.y : sideDistance.z);
-        mask.y = sideDistance.y <= ((sideDistance.z < sideDistance.x) ? sideDistance.z : sideDistance.x);
-        mask.z = sideDistance.z <= ((sideDistance.x < sideDistance.y) ? sideDistance.x : sideDistance.y);
-
-        sideDistance.x += mask.x * step.x;
-        sideDistance.y += mask.y * step.y;
-        sideDistance.z += mask.z * step.z;
-
-        voxelPosition.x += mask.x * sign.x;
-        voxelPosition.y += mask.y * sign.y;
-        voxelPosition.z += mask.z * sign.z;
-    }
-
-    if (debug)
-    {
-        printf("==========\n");
-    }
-    return 0;*/
 }
-
-void RotateY(Vector3f *vector, float angle)
-{
-    float x = cos(angle) * vector->x + sin(angle) * vector->z;
-    float z = -sin(angle) * vector->x + cos(angle) * vector->z;
-
-    vector->x = x;
-    vector->z = z;
-}
-
-void RotateZ(Vector3f *vector, float angle)
-{
-    float y = cos(angle) * vector->y - sin(angle) * vector->z;
-    float z = sin(angle) * vector->y + cos(angle) * vector->z;
-
-    vector->y = y;
-    vector->z = z;
-}
-
-typedef struct
-{
-    Camera camera;
-    World world;
-    int start, end;
-} ThreadArgs;
-
-pthread_t threads[4];
 
 void *RenderRows(void *args)
 {
@@ -206,15 +114,17 @@ void *RenderRows(void *args)
             }
         }
     }
+
+    return NULL;
 }
 
 void Render(Camera camera, World world)
 {
-    int linesPerThread = SCREEN_HEIGHT / 4;
+    int linesPerThread = SCREEN_HEIGHT / nThreads;
 
-    ThreadArgs args[4];
+    ThreadArgs args[nThreads];
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < nThreads; i++)
     {
         args[i].camera = camera;
         args[i].world = world;
@@ -224,7 +134,7 @@ void Render(Camera camera, World world)
         pthread_create(&(threads[i]), NULL, RenderRows, &(args[i]));
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < nThreads; i++)
     {
         pthread_join(threads[i], NULL);
     }

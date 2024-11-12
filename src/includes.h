@@ -1,5 +1,5 @@
-#ifndef __INCLUDES_
-#define __INCLUDES_
+#ifndef __INCLUDES_H_
+#define __INCLUDES_H_
 
 #define SDL_MAIN_HANDLED
 
@@ -16,5 +16,6 @@
 #include "window.h"
 #include "camera.h"
 #include "world.h"
+#include "control.h"
 
 #endif

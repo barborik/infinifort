@@ -1,5 +1,5 @@
-#ifndef __WORLD_
-#define __WORLD_
+#ifndef __WORLD_H_
+#define __WORLD_H_
 
 void CreateWorld(World *world);
 int GetVoxel(World world, Vector3i position);

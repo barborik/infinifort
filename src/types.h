@@ -1,5 +1,5 @@
-#ifndef __TYPES_
-#define __TYPES_
+#ifndef __TYPES_H_
+#define __TYPES_H_
 
 typedef struct
 {

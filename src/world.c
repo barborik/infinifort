@@ -19,21 +19,31 @@ void CreateWorld(World *world)
     position.z = 0;
     SetVoxel(*world, position, 1);
 
-    position.x = 0;
-    position.y = 0;
+    position.x = 1;
+    position.y = 1;
     position.z = 0;
+    SetVoxel(*world, position, 1);
+
+    position.x = 0;
+    position.y = 1;
+    position.z = 1;
     SetVoxel(*world, position, 1);
 
     position.x = 1;
-    position.y = 0;
-    position.z = 0;
-    SetVoxel(*world, position, 1);
-
-    position.x = 0;
-    position.y = 0;
+    position.y = 1;
     position.z = 1;
     SetVoxel(*world, position, 1);
-    // world->grid[0] = 1;
+
+    position.x = 2;
+    position.y = 1;
+    position.z = 2;
+    SetVoxel(*world, position, 1);
+
+
+    position.x = 2;
+    position.y = 1;
+    position.z = 1;
+    SetVoxel(*world, position, 1);
 }
 
 int GetVoxel(World world, Vector3i position)
