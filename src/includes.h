@@ -10,6 +10,7 @@
 #include <pthread.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "types.h"
 #include "util.h"
@@ -17,5 +18,6 @@
 #include "camera.h"
 #include "world.h"
 #include "control.h"
+#include "texture.h"
 
 #endif

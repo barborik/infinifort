@@ -9,44 +9,28 @@ void CreateWorld(World *world)
     dimensions.z = 8;
 
     world->dimensions = dimensions;
-    world->grid = malloc(dimensions.x * dimensions.y * dimensions.z);
-    memset(world->grid, 0, dimensions.x * dimensions.y * dimensions.z);
+    world->tiles = malloc(dimensions.x * dimensions.y * dimensions.z);
+    memset(world->tiles, 0, dimensions.x * dimensions.y * dimensions.z);
 
     Vector3i position;
 
     position.x = 0;
-    position.y = 1;
+    position.y = 0;
     position.z = 0;
-    SetVoxel(*world, position, 1);
+    SetTile(*world, position, T_GRASS);
 
     position.x = 1;
-    position.y = 1;
+    position.y = 0;
     position.z = 0;
-    SetVoxel(*world, position, 1);
+    SetTile(*world, position, T_GRASS);
 
     position.x = 0;
-    position.y = 1;
+    position.y = 0;
     position.z = 1;
-    SetVoxel(*world, position, 1);
-
-    position.x = 1;
-    position.y = 1;
-    position.z = 1;
-    SetVoxel(*world, position, 1);
-
-    position.x = 2;
-    position.y = 1;
-    position.z = 2;
-    SetVoxel(*world, position, 1);
-
-
-    position.x = 2;
-    position.y = 1;
-    position.z = 1;
-    SetVoxel(*world, position, 1);
+    SetTile(*world, position, T_GRASS);
 }
 
-int GetVoxel(World world, Vector3i position)
+int GetTile(World world, Vector3i position)
 {
     if (position.x < 0 || position.x >= world.dimensions.x ||
         position.y < 0 || position.y >= world.dimensions.y ||
@@ -57,10 +41,10 @@ int GetVoxel(World world, Vector3i position)
 
     int yOffset = position.y * world.dimensions.x * world.dimensions.z;
     int zOffset = position.z * world.dimensions.x;
-    return world.grid[yOffset + zOffset + position.x];
+    return world.tiles[yOffset + zOffset + position.x];
 }
 
-void SetVoxel(World world, Vector3i position, int voxel)
+void SetTile(World world, Vector3i position, int tile)
 {
     if (position.x < 0 || position.x >= world.dimensions.x ||
         position.y < 0 || position.y >= world.dimensions.y ||
@@ -71,5 +55,5 @@ void SetVoxel(World world, Vector3i position, int voxel)
 
     int yOffset = position.y * world.dimensions.x * world.dimensions.z;
     int zOffset = position.z * world.dimensions.x;
-    world.grid[yOffset + zOffset + position.x] = voxel;
+    world.tiles[yOffset + zOffset + position.x] = tile;
 }

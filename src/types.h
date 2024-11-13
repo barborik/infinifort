@@ -13,15 +13,14 @@ typedef struct
 
 typedef struct
 {
-    uint8_t *grid;
-    Vector3i dimensions;
-} World;
+    float zoom;
+    Vector3f position;
+} Camera;
 
 typedef struct
 {
-    float fov;
-    float yaw, pitch;
-    Vector3f position;
-} Camera;
+    uint8_t *tiles;
+    Vector3i dimensions;
+} World;
 
 #endif

@@ -2,22 +2,25 @@
 
 int main(void)
 {
-    SDL_Event event;
-
     World world;
     Camera camera;
+    SDL_Event event;
+
+    // pthread_t renderThread;
+    // pthread_create(&renderThread, NULL, Render, NULL);
 
     CreateWindow();
 
     CreateWorld(&world);
     CreateCamera(&camera);
 
-    SDL_SetRelativeMouseMode(SDL_TRUE);
+    LoadTextures();
+
+    // SDL_SetRelativeMouseMode(SDL_TRUE);
 
     while (1)
     {
-        // float fps;
-        // int frame_time, start_time = SDL_GetTicks();
+        int fps, frameTime, startTime = SDL_GetTicks();
 
         if (SDL_PollEvent(&event))
         {
@@ -32,18 +35,18 @@ int main(void)
             }
         }
 
-        SDL_FillRect(surface, NULL, 0);
-
+        SDL_RenderClear(renderer);
         Render(camera, world);
 
-        SDL_UpdateTexture(texture, NULL, surface->pixels, surface->pitch);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        char fpsText[8];
+        memset(fpsText, 0, 8);
+        sprintf(fpsText, "FPS: %d", fps);
+        PutString(fpsText, 8, 0, 0, 2);
+
         SDL_RenderPresent(renderer);
 
-        // frame_time = SDL_GetTicks() - start_time;
-        // fps = (frame_time > 0) ? 1000.0f / frame_time : 0.0f;
-
-        // printf("%f\n", fps);
+        frameTime = SDL_GetTicks() - startTime;
+        fps = (frameTime > 1) ? 1000.0f / frameTime : 999;
     }
 
 exit:
