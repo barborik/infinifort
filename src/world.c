@@ -15,18 +15,28 @@ void CreateWorld(World *world)
     Vector3i position;
 
     position.x = 0;
-    position.y = 0;
+    position.y = 4;
     position.z = 0;
     SetTile(*world, position, T_GRASS);
 
     position.x = 1;
-    position.y = 0;
+    position.y = 4;
     position.z = 0;
     SetTile(*world, position, T_GRASS);
 
     position.x = 0;
-    position.y = 0;
+    position.y = 4;
     position.z = 1;
+    SetTile(*world, position, T_GRASS);
+
+    position.x = 1;
+    position.y = 3;
+    position.z = 1;
+    SetTile(*world, position, T_GRASS);
+
+    position.x = 0;
+    position.y = 5;
+    position.z = 0;
     SetTile(*world, position, T_GRASS);
 }
 

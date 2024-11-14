@@ -1,14 +1,16 @@
 #include "includes.h"
 
 SDL_Texture *font;
+SDL_Texture *player;
 SDL_Texture *textures[2];
 
 void LoadTextures(void)
 {
     font = IMG_LoadTexture(renderer, "res/dsc8x12.bmp");
+    player = IMG_LoadTexture(renderer, "res/player.png");
 
     textures[T_AIR] = IMG_LoadTexture(renderer, "res/air.png");
-    textures[T_GRASS] = IMG_LoadTexture(renderer, "res/grass.png");
+    textures[T_GRASS] = IMG_LoadTexture(renderer, "res/grass1.png");
 }
 
 void PutChar(char c, int x, int y, int size)
@@ -28,10 +30,13 @@ void PutChar(char c, int x, int y, int size)
     SDL_RenderCopy(renderer, font, &source, &destination);
 }
 
-void PutString(const char *s, int length, int x, int y, int size)
+void PutString(const char *s, int x, int y, int size)
 {
-    for (int i = 0; i < length; i++)
+    int i = 0;
+
+    while (s[i])
     {
         PutChar(s[i], x + i * CHAR_WIDTH * size, y, size);
+        i++;
     }
 }

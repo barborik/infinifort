@@ -18,34 +18,37 @@ int main(void)
 
     // SDL_SetRelativeMouseMode(SDL_TRUE);
 
+    int frameTime, fps = 0;
+
     while (1)
     {
-        int fps, frameTime, startTime = SDL_GetTicks();
+        long startTime = SDL_GetTicks64();
 
-        if (SDL_PollEvent(&event))
+        while (SDL_PollEvent(&event))
         {
             switch (event.type)
             {
             case SDL_QUIT:
                 goto exit;
-            case SDL_KEYDOWN:
-            case SDL_MOUSEMOTION:
-                Control(event, &camera);
-                continue;
             }
+
+            Control(event, &camera);
         }
+
+        camera.position.x += moveDelta.x;
+        camera.position.y += moveDelta.y;
+        camera.position.z += moveDelta.z;
 
         SDL_RenderClear(renderer);
         Render(camera, world);
 
-        char fpsText[8];
-        memset(fpsText, 0, 8);
+        char fpsText[9];
         sprintf(fpsText, "FPS: %d", fps);
-        PutString(fpsText, 8, 0, 0, 2);
+        PutString(fpsText, 0, 0, 2);
 
         SDL_RenderPresent(renderer);
 
-        frameTime = SDL_GetTicks() - startTime;
+        frameTime = SDL_GetTicks64() - startTime;
         fps = (frameTime > 1) ? 1000.0f / frameTime : 999;
     }
 

@@ -4,6 +4,7 @@
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 12
 
+extern SDL_Texture *player;
 extern SDL_Texture *textures[2];
 
 enum
@@ -14,6 +15,6 @@ enum
 
 void LoadTextures(void);
 void PutChar(char c, int x, int y, int size);
-void PutString(const char *s, int length, int x, int y, int size);
+void PutString(const char *s, int x, int y, int size);
 
 #endif

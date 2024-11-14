@@ -1,5 +1,7 @@
 #include "includes.h"
 
+Vector3f moveDelta;
+
 void Control(SDL_Event event, Camera *camera)
 {
     switch (event.type)
@@ -10,29 +12,35 @@ void Control(SDL_Event event, Camera *camera)
         switch (event.key.keysym.sym)
         {
         case SDLK_w:
-            camera->position.z -= 0.2f;
+            moveDelta.z =  0.0006f;
             break;
         case SDLK_s:
-            camera->position.z += 0.2f;
+            moveDelta.z = -0.0006f;
             break;
         case SDLK_a:
-            camera->position.x -= 0.2f;
+            moveDelta.x =  0.0006f;
             break;
         case SDLK_d:
-            camera->position.x += 0.2f;
-            break;
-        case SDLK_LEFT:
-            break;
-        case SDLK_RIGHT:
-            break;
-        case SDLK_UP:
-            break;
-        case SDLK_DOWN:
-            break;
-        case SDLK_SPACE:
-            break;
-        case SDLK_LSHIFT:
+            moveDelta.x = -0.0006f;
             break;
         }
+        break;
+    case SDL_KEYUP:
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_w:
+            if (moveDelta.z > 0) moveDelta.z = 0;
+            break;
+        case SDLK_s:
+            if (moveDelta.z < 0) moveDelta.z = 0;
+            break;
+        case SDLK_a:
+            if (moveDelta.x > 0) moveDelta.x = 0;
+            break;
+        case SDLK_d:
+            if (moveDelta.x < 0) moveDelta.x = 0;
+            break;
+        }
+        break;
     }
 }
